@@ -1,0 +1,9 @@
+pandas
+joblib
+pandas
+pandas
+routers
+fastapi
+pydantic
+pillow
+ultralytics
