@@ -3,7 +3,7 @@ from services.detector import detect_objects
 from services.distance import calculate_distance
 from services.danger import get_danger_level, get_voice_message
 from services.translator import translate
-
+from datetime import datetime
 
 model = YOLO("models/yolov8n.pt")
 
@@ -42,7 +42,8 @@ def analyze_image(image_bytes: bytes, lang: str = "fr") -> dict:
 
             detections.append({
                 "label":          label,
-                "label_traduit":  label_traduit,
+                "label_fr": label_traduit,
+                "detected_at": datetime.now().isoformat(),
                 "confidence":     conf,
                 "distance_meters": distance,
                 "danger_level":   danger,
