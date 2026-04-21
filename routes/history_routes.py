@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Header, Query
 from sqlalchemy.orm import Session
 from models.database import get_db, ScanHistory
 from services.auth_service import verify_jwt_token
@@ -10,12 +10,13 @@ router = APIRouter(prefix="/history", tags=["History"])
 # ─── GET /history
 @router.get("", response_model=HistoryResponse)
 def get_history(
-    authorization: str = Query(..., description="JWT token"),
+    authorization: str = Header(...),
     db: Session = Depends(get_db)
 ):
     try:
         # 1. Vérifier le token JWT
-        payload  = verify_jwt_token(authorization)
+        token   = authorization.replace("Bearer ", "")
+        payload = verify_jwt_token(token)
 
         # 2. Récupérer l'historique de l'utilisateur
         history = db.query(ScanHistory).filter(
@@ -44,12 +45,13 @@ def get_history(
 @router.post("/sync", response_model=SyncResponse)
 def sync_history(
     request: SyncRequest,
-    authorization: str = Query(..., description="JWT token"),
+    authorization: str = Header(...),
     db: Session = Depends(get_db)
 ):
     try:
         # 1. Vérifier le token JWT
-        payload  = verify_jwt_token(authorization)
+        token   = authorization.replace("Bearer ", "")
+        payload = verify_jwt_token(token)
         user_id  = int(payload["sub"])
 
         # 2. Enregistrer les scans reçus en base
